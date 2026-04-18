@@ -4,7 +4,6 @@ public class PlayerModel : MonoBehaviour
 {
     private Rigidbody rb;
     [SerializeField] private int speed = 5;
-    [SerializeField] private int rotationSpeed = 5;
 
     private void Awake()
     {
@@ -13,10 +12,13 @@ public class PlayerModel : MonoBehaviour
 
     public void Walk(Vector3 dir)
     {
-        rb.linearVelocity = dir * speed;
+        Vector3 velocity = dir * speed;
+        velocity.y = rb.linearVelocity.y; // preserva gravedad
+        rb.linearVelocity = velocity;
     }
-    public void Rotate(Vector3 dir)
+
+    public void RotateY(float angle)
     {
-        transform.forward = Vector3.Lerp(transform.forward, dir, rotationSpeed * Time.deltaTime);
+        transform.Rotate(0f, angle, 0f);
     }
 }
