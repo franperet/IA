@@ -7,9 +7,13 @@ public class ObjectPickup : MonoBehaviour
     [SerializeField] private LayerMask pickableLayer;
     [SerializeField] private InteractionUI interactionUI;
 
+    [Header("Scary Object")]
+    [SerializeField] private string scaryObjectTag = "ScaryObject";
+
     private Rigidbody heldObject;
 
     public bool IsHolding => heldObject != null;
+    public bool IsHoldingScaryObject => heldObject != null && heldObject.CompareTag(scaryObjectTag);
 
     public void Collect()
     {
