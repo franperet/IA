@@ -6,7 +6,6 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private LineOfSight los;
     [SerializeField] private FSM fsm;
-    [SerializeField] private ObjectPickup objectPickup;
 
     [Header("Movement")]
     [SerializeField] private float speed = 3f;
@@ -17,9 +16,6 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform[] waypoints;
     [SerializeField] private float waypointReachDistance = 0.5f;
     private int currentWaypointIndex = 0;
-
-    [Header("Flee")]
-    [SerializeField] private float fleeDetectionRange = 5f;
 
     private Animator animator;
     private PlayerHealth playerHealth;
@@ -39,15 +35,10 @@ public class EnemyController : MonoBehaviour
             && los.isInAngle(transform, player)
             && los.hasLineOfSight(transform, player);
 
-        bool playerHasScaryObject = objectPickup != null
-            && objectPickup.IsHoldingScaryObject
-            && Vector3.Distance(transform.position, player.position) <= fleeDetectionRange;
-
-        fsm.UpdateState(canSeePlayer, playerHasScaryObject);
+        fsm.UpdateState(canSeePlayer);
         ExecuteState();
 
-        if (fsm.currentState != FSM.EnemyState.Flee &&
-            Vector3.Distance(transform.position, player.position) <= killDistance)
+        if (Vector3.Distance(transform.position, player.position) <= killDistance)
             playerHealth.Die();
     }
 
@@ -58,7 +49,6 @@ public class EnemyController : MonoBehaviour
             case FSM.EnemyState.Patrol:  Patrol();       break;
             case FSM.EnemyState.Pursuit: PursuePlayer(); break;
             case FSM.EnemyState.Idle:    Idle();         break;
-            case FSM.EnemyState.Flee:    Flee();         break;
         }
     }
 
@@ -83,14 +73,6 @@ public class EnemyController : MonoBehaviour
     void PursuePlayer()
     {
         MoveToward(player.position);
-        animator.SetFloat("Speed", 1f);
-    }
-
-    void Flee()
-    {
-        Vector3 fleeDirection = (transform.position - player.position).normalized;
-        Vector3 fleeTarget = transform.position + fleeDirection * 2f;
-        MoveToward(fleeTarget);
         animator.SetFloat("Speed", 1f);
     }
 
